@@ -2,11 +2,14 @@
    The consumer provides the UI via RenderFragments — this component provides the API. *@
 
 <CascadingValue Value="this" IsFixed="true">
+    @Header
+
     @ChildContent
 </CascadingValue>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Header { get; set; }
     [Parameter] public string? DefaultActiveKey { get; set; }
 
     private readonly List<TabDefinition> _tabs = [];

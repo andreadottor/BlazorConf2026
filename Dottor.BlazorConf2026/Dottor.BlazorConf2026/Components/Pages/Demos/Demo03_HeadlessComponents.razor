@@ -26,10 +26,7 @@
             </div>
             <div class="card-body">
                 <HeadlessTabs @ref="_tabsA" DefaultActiveKey="profile">
-                        <TabItem Key="home" Title="Home" />
-                        <TabItem Key="profile" Title="Profile" />
-                        <TabItem Key="settings" Title="Settings" />
-
+                    <Header>
                         @* Custom Bootstrap tab UI *@
                         <ul class="nav nav-tabs mb-3">
                             @foreach (var tab in _tabsA.Tabs)
@@ -42,19 +39,18 @@
                                 </li>
                             }
                         </ul>
-
-                        @if (_tabsA.IsActive("home"))
-                        {
+                    </Header>
+                    <ChildContent>
+                        <TabItem Key="home" Title="Home">
                             <p>🏠 Welcome to the home tab.</p>
-                        }
-                        else if (_tabsA.IsActive("profile"))
-                        {
+                        </TabItem>
+                        <TabItem Key="profile" Title="Profile">
                             <p>👤 This is your profile information.</p>
-                        }
-                        else if (_tabsA.IsActive("settings"))
-                        {
+                        </TabItem>
+                        <TabItem Key="settings" Title="Settings">
                             <p>⚙️ Adjust your settings here.</p>
-                        }
+                        </TabItem>
+                    </ChildContent>
                 </HeadlessTabs>
             </div>
         </div>
@@ -69,10 +65,7 @@
             </div>
             <div class="card-body">
                 <HeadlessTabs @ref="_tabsB" DefaultActiveKey="overview">
-                        <TabItem Key="overview" Title="Overview" />
-                        <TabItem Key="details" Title="Details" />
-                        <TabItem Key="reviews" Title="Reviews" />
-
+                    <Header>
                         <div class="d-flex gap-2 mb-3">
                             @foreach (var tab in _tabsB.Tabs)
                             {
@@ -82,19 +75,18 @@
                                 </button>
                             }
                         </div>
-
-                        @if (_tabsB.IsActive("overview"))
-                        {
+                    </Header>
+                    <ChildContent>
+                        <TabItem Key="overview" Title="Overview">
                             <div class="alert alert-primary mb-0">📊 Product overview content.</div>
-                        }
-                        else if (_tabsB.IsActive("details"))
-                        {
+                        </TabItem>
+                        <TabItem Key="details" Title="Details">
                             <div class="alert alert-secondary mb-0">📋 Detailed specifications.</div>
-                        }
-                        else if (_tabsB.IsActive("reviews"))
-                        {
+                        </TabItem>
+                        <TabItem Key="reviews" Title="Reviews">
                             <div class="alert alert-warning mb-0">⭐ Customer reviews.</div>
-                        }
+                        </TabItem>
+                    </ChildContent>
                 </HeadlessTabs>
             </div>
         </div>
