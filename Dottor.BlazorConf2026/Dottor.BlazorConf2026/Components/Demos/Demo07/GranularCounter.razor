@@ -1,0 +1,28 @@
+@* Granular: isolated counter — only this component re-renders on click *@
+
+<div class="card mb-3 border-success">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Counter Section</h6>
+            <span class="badge bg-success">Renders: @_renderCount</span>
+        </div>
+        <div class="d-flex align-items-center gap-3 mt-2">
+            <button class="btn btn-primary btn-sm" @onclick="IncrementCounter">+1</button>
+            <span class="fs-5 fw-bold">@_counter</span>
+        </div>
+        <small class="text-muted">Only this component re-renders when you click.</small>
+    </div>
+</div>
+
+@code {
+    private int _counter;
+    private int _renderCount;
+
+    protected override bool ShouldRender()
+    {
+        _renderCount++;
+        return true;
+    }
+
+    private void IncrementCounter() => _counter++;
+}

@@ -1,0 +1,9 @@
+@* ThemedBadge: also consumes ThemeContext — no extra parameters needed from the parent *@
+
+<span class="badge @Theme?.BadgeCssClass">@Text</span>
+
+@code {
+    [CascadingParameter] public Models.ThemeContext? Theme { get; set; }
+
+    [Parameter] public string Text { get; set; } = string.Empty;
+}

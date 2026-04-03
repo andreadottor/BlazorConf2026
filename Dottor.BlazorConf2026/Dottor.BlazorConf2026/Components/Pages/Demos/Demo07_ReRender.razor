@@ -1,0 +1,87 @@
+@page "/demos/re-render"
+@using Dottor.BlazorConf2026.Components.Demos.Demo07
+
+<PageTitle>Demo 7 - Re-render Optimization</PageTitle>
+
+<div class="mb-4">
+    <h2>⚡ Demo 7: Re-render Optimization</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> Split monolithic components into smaller, focused ones to reduce unnecessary re-renders.
+        Use <code>@@key</code> on dynamic lists to help Blazor preserve element identity.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> Click "+1" in Part 1 and look at the timestamps — <strong>every section</strong> re-renders.
+        Now click "+1" in Part 2 — only the counter component re-renders, the others stay frozen.
+        In Part 3, type in the inputs, then shuffle — see how <code>@@key</code> preserves element identity.
+    </div>
+</div>
+
+@* ─── Part 1: Problem ─── *@
+<div class="card border-danger mb-4">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+        <span>❌ Part 1: Monolithic Component (Over-Rendering)</span>
+        <span class="badge bg-light text-danger">all sections re-render on every click</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Click the counter and watch the <strong>timestamps update in every section</strong> — proof that the entire component re-renders.
+        </p>
+        <MonolithicWidget />
+    </div>
+</div>
+
+@* ─── Part 2: Solution - Granularity ─── *@
+<div class="card border-success mb-4">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <span>✅ Part 2: Granular Components (Isolated Re-Renders)</span>
+        <span class="badge bg-light text-success">only the affected component re-renders</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Same UI, split into three independent components. Click the counter — only the counter badge increments.
+            The user list and static info <strong>stay frozen</strong>.
+        </p>
+        <div class="border rounded p-3">
+            <GranularCounter />
+            <GranularUserList Users="_users" />
+            <GranularStaticInfo />
+        </div>
+    </div>
+</div>
+
+@* ─── Part 3: @key ─── *@
+<div class="card border-primary mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <span>🔑 Part 3: List Identity with <code class="text-white">@@key</code></span>
+        <span class="badge bg-light text-primary">element identity vs position</span>
+    </div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            <strong>Step 1:</strong> Type something different in each input on <em>both</em> columns.
+            <strong>Step 2:</strong> Click <em>Shuffle</em>.
+            On the left (no @@key), text stays in place while labels move — inputs are matched by position.
+            On the right (with @@key), text follows its item — inputs are matched by identity.
+        </p>
+        <KeyDemo />
+    </div>
+</div>
+
+<div class="p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li>Blazor re-renders a component and its <strong>entire subtree</strong> when state changes.</li>
+        <li>Extracting subcomponents creates <strong>render boundaries</strong> — siblings don't re-render.</li>
+        <li><code>@@key</code> tells Blazor to track elements by a stable identity, not by position in the list.</li>
+        <li>Avoid unnecessary <code>StateHasChanged()</code> calls — they propagate re-renders down the tree.</li>
+    </ul>
+</div>
+
+@code {
+    private readonly IReadOnlyList<Models.User> _users =
+    [
+        new(1, "Alice Johnson",  "alice@example.com",  "Admin"),
+        new(2, "Bob Smith",      "bob@example.com",    "Developer"),
+        new(3, "Carol White",    "carol@example.com",  "Designer"),
+        new(4, "David Brown",    "david@example.com",  "Developer"),
+    ];
+}

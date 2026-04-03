@@ -1,0 +1,171 @@
+@page "/demos/form-integration"
+@using Microsoft.AspNetCore.Components.Forms
+@using Dottor.BlazorConf2026.Components.Demos.Demo06
+
+<PageTitle>Demo 6 - Form Integration</PageTitle>
+
+<div class="mb-4">
+    <h2>📝 Demo 6: Form Integration Pattern</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> Custom input components must integrate with <code>EditContext</code>
+        via <code>ValueExpression</code> and <code>NotifyFieldChanged</code> to work correctly
+        with validation, field CSS classes, and form state.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> In both forms, select a category and observe the <strong>field state inspector</strong> below.
+        On the left (broken), the field never shows as <em>modified</em> — the form doesn't know the field changed.
+        On the right (fixed), the form tracks the field correctly: modified, valid/invalid CSS, real-time validation.
+    </div>
+</div>
+
+<div class="row g-4">
+    @* ─── PROBLEM ─── *@
+    <div class="col-md-6">
+        <div class="card border-danger h-100">
+            <div class="card-header bg-danger text-white">
+                ❌ Problem: Not integrated with EditForm
+            </div>
+            <div class="card-body">
+                <EditForm Model="_brokenModel" OnValidSubmit="HandleBrokenSubmit" FormName="broken">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <InputText class="form-control" @bind-Value="_brokenModel.Name" />
+                        <ValidationMessage For="() => _brokenModel.Name" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <InputText class="form-control" @bind-Value="_brokenModel.Email" />
+                        <ValidationMessage For="() => _brokenModel.Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-danger">Category ← broken input</label>
+                        <BrokenCategorySelect Label="Category"
+                            Options="_categories"
+                            Value="_brokenModel.Category"
+                            ValueChanged="v => _brokenModel.Category = v" />
+                        <ValidationMessage For="() => _brokenModel.Category" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <InputTextArea class="form-control" @bind-Value="_brokenModel.Message" />
+                        <ValidationMessage For="() => _brokenModel.Message" />
+                    </div>
+
+                    <button type="submit" class="btn btn-danger">Submit</button>
+
+                    @if (_brokenSubmitted)
+                    {
+                        <span class="badge bg-success ms-2">Submitted!</span>
+                    }
+                </EditForm>
+
+                <div class="card bg-light border mt-3">
+                    <div class="card-header py-1 small fw-bold">🔍 Field State Inspector</div>
+                    <div class="card-body py-2 small font-monospace">
+                        <div>Model.Category = "<span class="fw-bold">@_brokenModel.Category</span>"</div>
+                        <div class="text-danger mt-1">
+                            ⚠️ No CSS class changes on the select<br />
+                            ⚠️ Validation won't trigger on change<br />
+                            ⚠️ Field not tracked as "modified"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ─── SOLUTION ─── *@
+    <div class="col-md-6">
+        <div class="card border-success h-100">
+            <div class="card-header bg-success text-white">
+                ✅ Solution: Properly integrated with EditForm
+            </div>
+            <div class="card-body">
+                <EditForm Model="_fixedModel" OnValidSubmit="HandleFixedSubmit" FormName="fixed" @ref="_fixedForm">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <InputText class="form-control" @bind-Value="_fixedModel.Name" />
+                        <ValidationMessage For="() => _fixedModel.Name" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <InputText class="form-control" @bind-Value="_fixedModel.Email" />
+                        <ValidationMessage For="() => _fixedModel.Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-success">Category ← correct input</label>
+                        <CorrectCategorySelect Label="Category"
+                            Options="_categories"
+                            @bind-Value="_fixedModel.Category" />
+                        <ValidationMessage For="() => _fixedModel.Category" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <InputTextArea class="form-control" @bind-Value="_fixedModel.Message" />
+                        <ValidationMessage For="() => _fixedModel.Message" />
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Submit</button>
+
+                    @if (_fixedSubmitted)
+                    {
+                        <span class="badge bg-success ms-2">Submitted!</span>
+                    }
+                </EditForm>
+
+                <div class="card bg-light border mt-3">
+                    <div class="card-header py-1 small fw-bold">🔍 Field State Inspector</div>
+                    <div class="card-body py-2 small font-monospace">
+                        <div>Model.Category = "<span class="fw-bold">@_fixedModel.Category</span>"</div>
+                        @if (_fixedForm?.EditContext is not null)
+                        {
+                            var fi = FieldIdentifier.Create(() => _fixedModel.Category);
+                            var isModified = _fixedForm.EditContext.IsModified(fi);
+                            var cssClass = _fixedForm.EditContext.FieldCssClass(fi);
+                            <div class="mt-1">
+                                Modified: <span class="badge @(isModified ? "bg-warning text-dark" : "bg-secondary")">@isModified</span>
+                            </div>
+                            <div>
+                                CSS class: <code>@(string.IsNullOrEmpty(cssClass) ? "(none)" : cssClass)</code>
+                            </div>
+                            <div class="text-success mt-1">✅ Field tracked, validation reacts in real time</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li>The broken component uses <code>Value</code> + <code>ValueChanged</code> only — the model updates, but the form is unaware.</li>
+        <li>The correct component adds <code>ValueExpression</code> → creates <code>FieldIdentifier</code> → calls <code>NotifyFieldChanged</code>.</li>
+        <li>This integrates with <code>EditContext</code> so that validation, CSS classes (<code>modified</code>, <code>valid</code>, <code>invalid</code>), and field tracking all work.</li>
+        <li>For most cases, inherit from <code>InputBase&lt;T&gt;</code> to get this for free.</li>
+    </ul>
+</div>
+
+@code {
+    private Models.ContactFormModel _brokenModel = new();
+    private Models.ContactFormModel _fixedModel = new();
+    private EditForm? _fixedForm;
+    private bool _brokenSubmitted;
+    private bool _fixedSubmitted;
+
+    private static readonly IReadOnlyList<string> _categories = ["General", "Support", "Sales", "Feedback"];
+
+    private void HandleBrokenSubmit() => _brokenSubmitted = true;
+    private void HandleFixedSubmit() => _fixedSubmitted = true;
+}

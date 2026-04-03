@@ -1,0 +1,79 @@
+@* ToastHost: subscribes to ToastService and displays incoming notifications.
+   Placed anywhere in the layout — completely decoupled from senders. *@
+
+@implements IDisposable
+@inject Services.ToastService ToastService
+
+@if (_toasts.Count > 0)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080; max-width: 380px;">
+        @foreach (var toast in _toasts)
+        {
+            <div class="toast show mb-2 border-start border-4 @GetBorderClass(toast.Level)" role="alert">
+                <div class="toast-header">
+                    <span class="badge @GetBadgeClass(toast.Level) me-2">@toast.Level</span>
+                    <strong class="me-auto">@toast.Title</strong>
+                    <small class="text-muted">@toast.CreatedAt.ToString("HH:mm:ss")</small>
+                    <button type="button" class="btn-close" @onclick="() => Dismiss(toast)"></button>
+                </div>
+                <div class="toast-body">
+                    @toast.Text
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private readonly List<Models.ToastMessage> _toasts = [];
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += HandleToast;
+    }
+
+    private async void HandleToast(Models.ToastMessage message)
+    {
+        await InvokeAsync(() =>
+        {
+            _toasts.Add(message);
+            StateHasChanged();
+        });
+
+        // Auto-dismiss after 4 seconds
+        _ = Task.Delay(4000).ContinueWith(async _ =>
+        {
+            await InvokeAsync(() =>
+            {
+                _toasts.Remove(message);
+                StateHasChanged();
+            });
+        });
+    }
+
+    private void Dismiss(Models.ToastMessage toast)
+    {
+        _toasts.Remove(toast);
+    }
+
+    private static string GetBorderClass(Models.ToastLevel level) => level switch
+    {
+        Models.ToastLevel.Success => "border-success",
+        Models.ToastLevel.Warning => "border-warning",
+        Models.ToastLevel.Error   => "border-danger",
+        _                         => "border-info",
+    };
+
+    private static string GetBadgeClass(Models.ToastLevel level) => level switch
+    {
+        Models.ToastLevel.Success => "bg-success",
+        Models.ToastLevel.Warning => "bg-warning text-dark",
+        Models.ToastLevel.Error   => "bg-danger",
+        _                         => "bg-info",
+    };
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= HandleToast;
+    }
+}

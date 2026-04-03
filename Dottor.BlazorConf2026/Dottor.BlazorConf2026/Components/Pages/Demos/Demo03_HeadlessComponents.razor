@@ -1,0 +1,118 @@
+@page "/demos/headless-components"
+@using Dottor.BlazorConf2026.Components.Demos.Demo03
+
+<PageTitle>Demo 3 - Headless Components</PageTitle>
+
+<div class="mb-4">
+    <h2>🧠 Demo 3: Headless Components</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> A headless component encapsulates <em>logic</em> (tab selection, state)
+        but delegates <em>all rendering</em> to the consumer. The UI is fully customizable without changing the component.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> Both tab groups below use the <strong>exact same <code>HeadlessTabs</code> component</strong> for logic.
+        The only difference is the UI: Bootstrap tabs on the left, pill buttons on the right.
+        Switch tabs in both — same behavior, completely different look.
+    </div>
+</div>
+
+<div class="row g-4">
+    @* ─── Version 1: Bootstrap Tabs ─── *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><strong>Version A:</strong> Bootstrap Tabs UI</span>
+                <span class="badge bg-primary">active: @(_tabsA?.ActiveKey ?? "...")</span>
+            </div>
+            <div class="card-body">
+                <HeadlessTabs @ref="_tabsA" DefaultActiveKey="profile">
+                        <TabItem Key="home" Title="Home" />
+                        <TabItem Key="profile" Title="Profile" />
+                        <TabItem Key="settings" Title="Settings" />
+
+                        @* Custom Bootstrap tab UI *@
+                        <ul class="nav nav-tabs mb-3">
+                            @foreach (var tab in _tabsA.Tabs)
+                            {
+                                <li class="nav-item">
+                                    <button class="nav-link @(_tabsA.IsActive(tab.Key) ? "active" : "")"
+                                            @onclick="() => _tabsA.SetActive(tab.Key)">
+                                        @tab.Title
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+
+                        @if (_tabsA.IsActive("home"))
+                        {
+                            <p>🏠 Welcome to the home tab.</p>
+                        }
+                        else if (_tabsA.IsActive("profile"))
+                        {
+                            <p>👤 This is your profile information.</p>
+                        }
+                        else if (_tabsA.IsActive("settings"))
+                        {
+                            <p>⚙️ Adjust your settings here.</p>
+                        }
+                </HeadlessTabs>
+            </div>
+        </div>
+    </div>
+
+    @* ─── Version 2: Pill Buttons ─── *@
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><strong>Version B:</strong> Pill Buttons UI (same logic!)</span>
+                <span class="badge bg-primary">active: @(_tabsB?.ActiveKey ?? "...")</span>
+            </div>
+            <div class="card-body">
+                <HeadlessTabs @ref="_tabsB" DefaultActiveKey="overview">
+                        <TabItem Key="overview" Title="Overview" />
+                        <TabItem Key="details" Title="Details" />
+                        <TabItem Key="reviews" Title="Reviews" />
+
+                        <div class="d-flex gap-2 mb-3">
+                            @foreach (var tab in _tabsB.Tabs)
+                            {
+                                <button class="btn @(_tabsB.IsActive(tab.Key) ? "btn-primary" : "btn-outline-primary") btn-sm rounded-pill"
+                                        @onclick="() => _tabsB.SetActive(tab.Key)">
+                                    @tab.Title
+                                </button>
+                            }
+                        </div>
+
+                        @if (_tabsB.IsActive("overview"))
+                        {
+                            <div class="alert alert-primary mb-0">📊 Product overview content.</div>
+                        }
+                        else if (_tabsB.IsActive("details"))
+                        {
+                            <div class="alert alert-secondary mb-0">📋 Detailed specifications.</div>
+                        }
+                        else if (_tabsB.IsActive("reviews"))
+                        {
+                            <div class="alert alert-warning mb-0">⭐ Customer reviews.</div>
+                        }
+                </HeadlessTabs>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li><code>HeadlessTabs</code> manages which tab is active — zero rendering decisions.</li>
+        <li>The consumer builds the UI however it wants (Bootstrap tabs, pills, vertical sidebar...).</li>
+        <li><code>TabItem</code> registers itself and conditionally renders its content.</li>
+        <li>Both versions share the <strong>exact same logic component</strong> — only the skin changes.</li>
+        <li>The message: <em>"Logic is separated from visual representation."</em></li>
+    </ul>
+</div>
+
+@code {
+    private HeadlessTabs _tabsA = default!;
+    private HeadlessTabs _tabsB = default!;
+}

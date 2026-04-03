@@ -1,0 +1,38 @@
+@* PROBLEM: This component duplicates state internally.
+   It receives an initial value but then manages its own copy,
+   which can get out of sync with the parent. *@
+
+<div class="d-flex gap-1 align-items-center">
+    @for (int i = 1; i <= MaxStars; i++)
+    {
+        var star = i;
+        <span style="cursor: pointer; font-size: 1.5rem;"
+              @onclick="() => SetRating(star)">
+            @(star <= _internalValue ? "★" : "☆")
+        </span>
+    }
+    <span class="badge bg-danger bg-opacity-75 ms-2" title="Child's internal copy">
+        child: @_internalValue
+    </span>
+</div>
+
+@code {
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int MaxStars { get; set; } = 5;
+
+    // ⚠️ PROBLEM: duplicated internal state, initialized once from Parameter
+    private int _internalValue;
+
+    protected override void OnInitialized()
+    {
+        _internalValue = Value;
+    }
+
+    private async Task SetRating(int star)
+    {
+        _internalValue = star;                // updates internal copy
+        await ValueChanged.InvokeAsync(star); // notifies parent...
+        // ...but if parent re-renders, _internalValue won't update (OnInitialized runs only once)
+    }
+}

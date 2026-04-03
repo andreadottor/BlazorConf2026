@@ -1,0 +1,10 @@
+@* ThemeProvider: wraps children in a CascadingValue of ThemeContext *@
+
+<CascadingValue Value="Theme">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired] public required Models.ThemeContext Theme { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

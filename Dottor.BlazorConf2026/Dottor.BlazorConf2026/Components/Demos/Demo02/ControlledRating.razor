@@ -1,0 +1,26 @@
+@* SOLUTION: Controlled component — no internal state, 
+   always reflects the parent's value. *@
+
+<div class="d-flex gap-1">
+    @for (int i = 1; i <= MaxStars; i++)
+    {
+        var star = i;
+        <span style="cursor: pointer; font-size: 1.5rem;"
+              @onclick="() => SetRating(star)">
+            @(star <= Value ? "★" : "☆")
+        </span>
+    }
+</div>
+
+@code {
+    // ✅ No internal state — Value is the single source of truth
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int MaxStars { get; set; } = 5;
+
+    private async Task SetRating(int star)
+    {
+        await ValueChanged.InvokeAsync(star);
+        // Parent updates Value → component re-renders with correct state
+    }
+}

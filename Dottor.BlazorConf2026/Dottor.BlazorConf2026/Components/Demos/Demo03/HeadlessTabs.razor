@@ -1,0 +1,43 @@
+@* Headless Tabs: manages tab logic, delegates rendering to the consumer.
+   The consumer provides the UI via RenderFragments — this component provides the API. *@
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? DefaultActiveKey { get; set; }
+
+    private readonly List<TabDefinition> _tabs = [];
+    private string? _activeKey;
+
+    public IReadOnlyList<TabDefinition> Tabs => _tabs;
+    public string? ActiveKey => _activeKey;
+
+    protected override void OnInitialized()
+    {
+        _activeKey = DefaultActiveKey;
+    }
+
+    public void RegisterTab(TabDefinition tab)
+    {
+        if (_tabs.All(t => t.Key != tab.Key))
+        {
+            _tabs.Add(tab);
+            _activeKey ??= tab.Key;
+            StateHasChanged();
+        }
+    }
+
+    public void SetActive(string key)
+    {
+        if (_activeKey != key)
+        {
+            _activeKey = key;
+            StateHasChanged();
+        }
+    }
+
+    public bool IsActive(string key) => _activeKey == key;
+}

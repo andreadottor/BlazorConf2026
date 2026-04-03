@@ -1,0 +1,127 @@
+@page "/demos/component-communication"
+@using Dottor.BlazorConf2026.Components.Demos.Demo05
+@implements IDisposable
+
+<PageTitle>Demo 5 - Component Communication</PageTitle>
+
+<div class="mb-4">
+    <h2>📡 Demo 5: Component Communication (Non-Hierarchical)</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> When components are <em>not</em> in a parent/child relationship,
+        use a shared <strong>service with events</strong> for communication.
+        No parameters, no cascading — just a lightweight DI service.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> Type a message and click a level button. The toast appears in the bottom-right corner
+        and the event log below records every message. The sender and receiver have <strong>no reference to each other</strong>.
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <h5>Sender <span class="badge bg-secondary">Component A</span></h5>
+        <p class="text-muted small">Publishes toast notifications through <code>ToastService</code>. Has no idea who listens.</p>
+        <NotificationSender />
+
+        <div class="mt-3">
+            <h6>Quick Actions <small class="text-muted fw-normal">(from this page, not from NotificationSender)</small></h6>
+            <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-outline-success btn-sm"
+                        @onclick='() => ToastService.Success("Saved", "Your changes have been saved.")'>
+                    ✅ Trigger Save
+                </button>
+                <button class="btn btn-outline-danger btn-sm"
+                        @onclick='() => ToastService.Error("Error", "Connection lost!")'>
+                    ❌ Trigger Error
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-center justify-content-center">
+        <div class="text-center">
+            <div class="card border-dark">
+                <div class="card-body py-2 small font-monospace">
+                    <div>Component A</div>
+                    <div>↓ <code>.Show()</code></div>
+                    <div class="badge bg-dark my-1">ToastService</div>
+                    <div>↓ <code>OnShow</code> event</div>
+                    <div>Component B</div>
+                </div>
+            </div>
+            <small class="text-muted mt-1 d-block">Communication flow</small>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <h5>Event Log <span class="badge bg-info">@_eventLog.Count messages</span></h5>
+        <div class="border rounded bg-light" style="max-height: 280px; overflow-y: auto;">
+            @if (_eventLog.Count == 0)
+            {
+                <div class="text-center text-muted py-4 small">
+                    Send a notification to see events here.
+                </div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush small">
+                    @foreach (var entry in _eventLog.AsEnumerable().Reverse())
+                    {
+                        <li class="list-group-item py-1">
+                            <span class="badge @GetBadgeClass(entry.Level) me-1">@entry.Level</span>
+                            <strong>@entry.Title</strong>
+                            <span class="text-muted">— @entry.Text</span>
+                            <small class="text-muted d-block">@entry.CreatedAt.ToString("HH:mm:ss.fff")</small>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li><code>ToastService</code> is registered as a <strong>scoped service</strong> via DI.</li>
+        <li><code>NotificationSender</code> calls <code>ToastService.Show(...)</code> — fire and forget.</li>
+        <li><code>ToastHost</code> subscribes to <code>ToastService.OnShow</code> and renders incoming toasts.</li>
+        <li>Neither component knows the other exists — the service is the only coupling point.</li>
+        <li>Remember to <code>Dispose</code> event subscriptions to avoid memory leaks.</li>
+    </ul>
+</div>
+
+<ToastHost />
+
+@code {
+    [Inject] private Services.ToastService ToastService { get; set; } = default!;
+
+    private readonly List<Models.ToastMessage> _eventLog = [];
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += LogEvent;
+    }
+
+    private async void LogEvent(Models.ToastMessage message)
+    {
+        await InvokeAsync(() =>
+        {
+            _eventLog.Add(message);
+            StateHasChanged();
+        });
+    }
+
+    private static string GetBadgeClass(Models.ToastLevel level) => level switch
+    {
+        Models.ToastLevel.Success => "bg-success",
+        Models.ToastLevel.Warning => "bg-warning text-dark",
+        Models.ToastLevel.Error   => "bg-danger",
+        _                         => "bg-info",
+    };
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= LogEvent;
+    }
+}

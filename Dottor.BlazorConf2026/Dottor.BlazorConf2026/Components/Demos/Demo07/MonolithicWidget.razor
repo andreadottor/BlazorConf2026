@@ -1,0 +1,74 @@
+@* PROBLEM: Monolithic component — everything in one component.
+   Any state change re-renders the entire component, including expensive parts. *@
+
+<div class="border rounded p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">🧱 Monolithic Component</h6>
+        <span class="badge bg-warning text-dark">Renders: @_renderCount</span>
+    </div>
+
+    @* Section 1: Counter *@
+    <div class="card mb-3 border-danger">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Counter Section</h6>
+                <small class="text-danger">@DateTime.Now.ToString("HH:mm:ss.fff")</small>
+            </div>
+            <div class="d-flex align-items-center gap-3 mt-2">
+                <button class="btn btn-primary btn-sm" @onclick="IncrementCounter">+1</button>
+                <span class="fs-5 fw-bold">@_counter</span>
+            </div>
+        </div>
+    </div>
+
+    @* Section 2: User List (expensive) *@
+    <div class="card mb-3 border-danger">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">User List Section</h6>
+                <span class="badge bg-danger">re-rendered!</span>
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var user in _users)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-1">
+                        <span>@user.Name</span>
+                        <small class="text-danger">@DateTime.Now.ToString("HH:mm:ss.fff")</small>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    @* Section 3: Static info *@
+    <div class="card border-danger">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Static Info Section</h6>
+                <span class="badge bg-danger">re-rendered!</span>
+            </div>
+            <p class="mb-0 mt-1">Timestamp: <code>@DateTime.Now.ToString("HH:mm:ss.fff")</code></p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _counter;
+    private int _renderCount;
+
+    private readonly List<Models.User> _users =
+    [
+        new(1, "Alice Johnson",  "alice@example.com",  "Admin"),
+        new(2, "Bob Smith",      "bob@example.com",    "Developer"),
+        new(3, "Carol White",    "carol@example.com",  "Designer"),
+        new(4, "David Brown",    "david@example.com",  "Developer"),
+    ];
+
+    protected override bool ShouldRender()
+    {
+        _renderCount++;
+        return true;
+    }
+
+    private void IncrementCounter() => _counter++;
+}

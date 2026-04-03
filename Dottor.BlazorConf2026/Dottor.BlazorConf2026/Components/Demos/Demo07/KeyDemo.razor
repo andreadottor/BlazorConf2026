@@ -1,0 +1,78 @@
+@* Demonstrates @key for list identity *@
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Sortable List with <code>@@key</code></h6>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" @onclick="ShuffleList">🔀 Shuffle</button>
+                <button class="btn btn-sm btn-outline-success" @onclick="AddItem">➕ Add</button>
+                <button class="btn btn-sm btn-outline-danger" @onclick="RemoveFirst" disabled="@(_items.Count == 0)">🗑️ Remove First</button>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="text-danger mb-0">Without <code>@@key</code></h6>
+                    <span class="badge bg-danger bg-opacity-75">by position</span>
+                </div>
+                <ul class="list-group">
+                    @foreach (var item in _items)
+                    {
+                        <li class="list-group-item py-2">
+                            <small class="text-muted d-block">@item.Label</small>
+                            <input class="form-control form-control-sm" value="@item.Label" />
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="text-success mb-0">With <code>@@key</code></h6>
+                    <span class="badge bg-success bg-opacity-75">by identity</span>
+                </div>
+                <ul class="list-group">
+                    @foreach (var item in _items)
+                    {
+                        <li @key="item.Id" class="list-group-item py-2">
+                            <small class="text-muted d-block">@item.Label</small>
+                            <input class="form-control form-control-sm" value="@item.Label" />
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private record ListItem(int Id, string Label);
+
+    private List<ListItem> _items =
+    [
+        new(1, "Item Alpha"),
+        new(2, "Item Beta"),
+        new(3, "Item Gamma"),
+        new(4, "Item Delta"),
+    ];
+
+    private int _nextId = 5;
+
+    private void ShuffleList()
+    {
+        _items = [.. _items.OrderBy(_ => Random.Shared.Next())];
+    }
+
+    private void AddItem()
+    {
+        _items.Add(new ListItem(_nextId, $"Item {_nextId}"));
+        _nextId++;
+    }
+
+    private void RemoveFirst()
+    {
+        if (_items.Count > 0)
+            _items.RemoveAt(0);
+    }
+}

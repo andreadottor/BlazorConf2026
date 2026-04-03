@@ -1,0 +1,42 @@
+@* NotificationSender: a standalone component that publishes toasts via the shared service.
+   It has NO reference to ToastHost — communication happens through ToastService. *@
+
+@inject Services.ToastService ToastService
+
+<div class="card">
+    <div class="card-header">
+        📤 Send Notification
+    </div>
+    <div class="card-body">
+        <div class="mb-2">
+            <input class="form-control form-control-sm" placeholder="Title" @bind="_title" />
+        </div>
+        <div class="mb-2">
+            <input class="form-control form-control-sm" placeholder="Message" @bind="_text" />
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-info btn-sm" @onclick='() => Send(Models.ToastLevel.Info)'>
+                ℹ️ Info
+            </button>
+            <button class="btn btn-success btn-sm" @onclick='() => Send(Models.ToastLevel.Success)'>
+                ✅ Success
+            </button>
+            <button class="btn btn-warning btn-sm" @onclick='() => Send(Models.ToastLevel.Warning)'>
+                ⚠️ Warning
+            </button>
+            <button class="btn btn-danger btn-sm" @onclick='() => Send(Models.ToastLevel.Error)'>
+                ❌ Error
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _title = "Notification";
+    private string _text = "Something happened!";
+
+    private void Send(Models.ToastLevel level)
+    {
+        ToastService.Show(_title, _text, level);
+    }
+}

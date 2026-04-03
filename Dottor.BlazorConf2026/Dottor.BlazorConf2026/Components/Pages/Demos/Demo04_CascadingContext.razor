@@ -1,0 +1,112 @@
+@page "/demos/cascading-context"
+@using Dottor.BlazorConf2026.Components.Demos.Demo04
+
+<PageTitle>Demo 4 - Cascading Context</PageTitle>
+
+<div class="mb-4">
+    <h2>🎨 Demo 4: Cascading Context</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> Use <code>CascadingValue</code> / <code>CascadingParameter</code> to share
+        cross-cutting data (theme, locale, user prefs) through the component tree without prop-drilling.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> Click a theme button — all three cards and their nested badges update instantly.
+        No parameter was explicitly passed to <code>ThemedBadge</code>; it reads the theme from the cascading context automatically.
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <label class="form-label fw-bold mb-1">Select Theme:</label>
+        <div class="d-flex gap-2">
+            @foreach (var theme in _themes)
+            {
+                <button class="btn @(theme == _currentTheme ? "btn-primary" : "btn-outline-primary") btn-sm"
+                        @onclick="() => _currentTheme = theme">
+                    @theme.Name
+                </button>
+            }
+        </div>
+    </div>
+    <div class="text-end">
+        <small class="text-muted d-block">Current context</small>
+        <span class="badge @_currentTheme.BadgeCssClass fs-6 px-3">@_currentTheme.Name</span>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <h5>Components consuming <code>[CascadingParameter]</code></h5>
+        <p class="text-muted small mb-3">
+            <code>ThemedCard</code> and <code>ThemedBadge</code> (nested inside the card) both read the theme automatically —
+            no props explicitly passed for theming.
+        </p>
+
+        <ThemeProvider Theme="_currentTheme">
+            <ThemedCard Title="Project Alpha" BadgeText="Active">
+                This card and its badge automatically inherit the current theme context.
+            </ThemedCard>
+
+            <ThemedCard Title="Project Beta" BadgeText="Draft">
+                No need to pass theme as a parameter to every nested component.
+            </ThemedCard>
+
+            <ThemedCard Title="Project Gamma" BadgeText="Review">
+                Switch the theme above — all cards update instantly.
+            </ThemedCard>
+        </ThemeProvider>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-dark mb-3">
+            <div class="card-header bg-dark text-white py-2">
+                <small>🌳 Component Tree</small>
+            </div>
+            <div class="card-body py-2 small font-monospace">
+                <div>📦 <strong>ThemeProvider</strong></div>
+                <div class="ms-3">└─ CascadingValue&lt;ThemeContext&gt;</div>
+                <div class="ms-4 text-primary">🧩 <strong>ThemedCard</strong></div>
+                <div class="ms-5">├─ reads [CascadingParameter]</div>
+                <div class="ms-5">└─ renders ↓</div>
+                <div class="ms-5 text-success">🏷️ <strong>ThemedBadge</strong></div>
+                <div class="ms-5">&nbsp;&nbsp;&nbsp;└─ reads [CascadingParameter]</div>
+                <div class="ms-5 mt-1 text-muted">No prop-drilling needed!</div>
+            </div>
+        </div>
+
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark py-2">
+                ⚠️ When NOT to use Cascading
+            </div>
+            <div class="card-body small">
+                <ul class="mb-0">
+                    <li>Data specific to a single component → use <code>[Parameter]</code>.</li>
+                    <li>Frequently changing data on large trees → triggers broad re-renders.</li>
+                    <li>Data needed outside the tree → use a DI service.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li><code>ThemeProvider</code> wraps children with a <code>CascadingValue&lt;ThemeContext&gt;</code>.</li>
+        <li><code>ThemedCard</code> and <code>ThemedBadge</code> consume it via <code>[CascadingParameter]</code>.</li>
+        <li>ThemedBadge is <strong>nested inside</strong> ThemedCard — it still gets the context, no prop-drilling.</li>
+        <li>Switching the theme re-renders the entire subtree: powerful, but use wisely.</li>
+    </ul>
+</div>
+
+@code {
+    private static readonly Models.ThemeContext[] _themes =
+    [
+        new("border-primary",   "bg-primary",   "Blue"),
+        new("border-success",   "bg-success",   "Green"),
+        new("border-danger",    "bg-danger",    "Red"),
+        new("border-dark",      "bg-dark",      "Dark"),
+    ];
+
+    private Models.ThemeContext _currentTheme = _themes[0];
+}

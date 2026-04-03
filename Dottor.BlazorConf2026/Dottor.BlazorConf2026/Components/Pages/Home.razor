@@ -1,0 +1,147 @@
+﻿@page "/"
+
+<PageTitle>Blazor Components: Fundamentals to Advanced Patterns</PageTitle>
+
+<div class="text-center mb-3">
+    <h1 class="display-5 fw-bold">🧩 Blazor Components</h1>
+    <p class="lead text-muted mb-1">Fundamentals to Advanced Patterns</p>
+    <p class="text-muted small">A progressive, live-coding demo for conference talks</p>
+</div>
+
+<div class="alert alert-light border mb-4">
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <span style="font-size: 1.6rem;">🎤</span>
+        </div>
+        <div class="col">
+            <strong>How to use this demo:</strong>
+            Each scenario is independent. Navigate to any demo from the sidebar or the cards below.
+            Scenarios marked with <span class="badge bg-danger bg-opacity-75">Problem</span> / <span class="badge bg-success bg-opacity-75">Solution</span>
+            show the anti-pattern side by side with the correct approach — interact with both to see the difference live.
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col">
+        <a href="/demos/presentational-vs-container" class="text-decoration-none">
+            <div class="card h-100 border-primary shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-primary">🧩 1. Presentational vs Container</h5>
+                        <span class="badge bg-primary rounded-pill">Basics</span>
+                    </div>
+                    <p class="card-text text-body">Separate state and logic (container) from display (presentational) to create reusable, testable components.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <small class="text-primary fw-semibold">View Demo →</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/controlled-components" class="text-decoration-none">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-success">🎛️ 2. Controlled Components</h5>
+                        <span class="badge bg-success rounded-pill">State</span>
+                    </div>
+                    <p class="card-text text-body">Avoid duplicated state. The parent owns the value; the child renders and notifies changes.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <span class="badge bg-danger bg-opacity-75 me-1">Problem</span>
+                    <span class="badge bg-success bg-opacity-75">Solution</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/headless-components" class="text-decoration-none">
+            <div class="card h-100 border-info shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-info">🧠 3. Headless Components</h5>
+                        <span class="badge bg-info rounded-pill">Advanced</span>
+                    </div>
+                    <p class="card-text text-body">Separate logic from rendering. Reuse behavior across completely different UIs.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <small class="text-info fw-semibold">View Demo →</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/cascading-context" class="text-decoration-none">
+            <div class="card h-100 border-warning shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-warning">🎨 4. Cascading Context</h5>
+                        <span class="badge bg-warning text-dark rounded-pill">Data Flow</span>
+                    </div>
+                    <p class="card-text text-body">Share cross-cutting data through the component tree without prop-drilling every parameter.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <small class="text-warning fw-semibold">View Demo →</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/component-communication" class="text-decoration-none">
+            <div class="card h-100 border-danger shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-danger">📡 5. Component Communication</h5>
+                        <span class="badge bg-danger rounded-pill">Services</span>
+                    </div>
+                    <p class="card-text text-body">Non-hierarchical communication through a shared service with events (Toast pattern).</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <small class="text-danger fw-semibold">View Demo →</small>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/form-integration" class="text-decoration-none">
+            <div class="card h-100 border-secondary shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0 text-secondary">📝 6. Form Integration</h5>
+                        <span class="badge bg-secondary rounded-pill">Forms</span>
+                    </div>
+                    <p class="card-text text-body">Custom inputs must integrate with EditContext, FieldIdentifier, and NotifyFieldChanged.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <span class="badge bg-danger bg-opacity-75 me-1">Problem</span>
+                    <span class="badge bg-success bg-opacity-75">Solution</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col">
+        <a href="/demos/re-render" class="text-decoration-none">
+            <div class="card h-100 border-dark shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">⚡ 7. Re-render Optimization</h5>
+                        <span class="badge bg-dark rounded-pill">Perf</span>
+                    </div>
+                    <p class="card-text text-body">Granular components reduce unnecessary re-renders. Use @@key for list identity.</p>
+                </div>
+                <div class="card-footer bg-transparent text-end">
+                    <span class="badge bg-danger bg-opacity-75 me-1">Problem</span>
+                    <span class="badge bg-success bg-opacity-75">Solution</span>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>

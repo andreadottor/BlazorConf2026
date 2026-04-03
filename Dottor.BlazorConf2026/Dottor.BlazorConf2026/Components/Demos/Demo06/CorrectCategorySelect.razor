@@ -1,0 +1,48 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
+
+@* SOLUTION: Properly integrated with EditForm via EditContext.
+   Uses FieldIdentifier + NotifyFieldChanged so validation and field status work. *@
+
+<div class="form-floating">
+    <select class="form-select @CssClass" value="@Value" @onchange="HandleChange">
+        <option value="">-- Select --</option>
+        @foreach (var option in Options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+    <label>@Label</label>
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public Expression<Func<string>>? ValueExpression { get; set; }
+
+    [Parameter] public string Label { get; set; } = "Select";
+    [Parameter] public IReadOnlyList<string> Options { get; set; } = [];
+
+    // ✅ Retrieves the EditContext from the parent EditForm
+    [CascadingParameter] private EditContext? EditContext { get; set; }
+
+    private FieldIdentifier _fieldIdentifier;
+    private string CssClass => EditContext?.FieldCssClass(_fieldIdentifier) ?? string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (ValueExpression is not null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(val);
+
+        // ✅ Notify the form that this field has been modified
+        EditContext?.NotifyFieldChanged(_fieldIdentifier);
+    }
+}

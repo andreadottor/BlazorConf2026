@@ -1,0 +1,19 @@
+@* TabItem: registers itself with HeadlessTabs and conditionally renders its content *@
+
+@if (_tabs?.IsActive(Key) == true)
+{
+    @ChildContent
+}
+
+@code {
+    [CascadingParameter] public HeadlessTabs? _tabs { get; set; }
+
+    [Parameter, EditorRequired] public required string Key { get; set; }
+    [Parameter, EditorRequired] public required string Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _tabs?.RegisterTab(new TabDefinition(Title, Key));
+    }
+}

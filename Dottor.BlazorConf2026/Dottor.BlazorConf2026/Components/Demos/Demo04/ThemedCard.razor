@@ -1,0 +1,19 @@
+@* ThemedCard: consumes ThemeContext via CascadingParameter *@
+
+<div class="card @Theme?.CardCssClass mb-3">
+    <div class="card-body">
+        <h6 class="card-title d-flex align-items-center gap-2">
+            @Title
+            <ThemedBadge Text="@BadgeText" />
+        </h6>
+        <p class="card-text mb-0">@ChildContent</p>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public Models.ThemeContext? Theme { get; set; }
+
+    [Parameter] public string Title { get; set; } = "Card";
+    [Parameter] public string BadgeText { get; set; } = "Tag";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

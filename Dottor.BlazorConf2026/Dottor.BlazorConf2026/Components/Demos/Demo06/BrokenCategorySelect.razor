@@ -1,0 +1,29 @@
+@* PROBLEM: This component supports Value/ValueChanged but does NOT integrate with EditForm.
+   It never calls EditContext.NotifyFieldChanged, so validation and field status don't work. *@
+
+<div class="form-floating">
+    <select class="form-select" value="@Value" @onchange="HandleChange">
+        <option value="">-- Select --</option>
+        @foreach (var option in Options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+    <label>@Label</label>
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Label { get; set; } = "Select";
+    [Parameter] public IReadOnlyList<string> Options { get; set; } = [];
+
+    // ⚠️ No EditContext integration: no FieldIdentifier, no NotifyFieldChanged
+    // The form doesn't know this field changed → validation won't trigger
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(val);
+    }
+}

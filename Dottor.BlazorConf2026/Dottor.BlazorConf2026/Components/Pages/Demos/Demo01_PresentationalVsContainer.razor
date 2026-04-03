@@ -1,0 +1,112 @@
+@page "/demos/presentational-vs-container"
+@using Dottor.BlazorConf2026.Components.Demos.Demo01
+
+<PageTitle>Demo 1 - Presentational vs Container</PageTitle>
+
+<div class="mb-4">
+    <h2>🧩 Demo 1: Presentational vs Container</h2>
+    <div class="alert alert-info mb-3">
+        <strong>Pattern:</strong> Separate components into <em>Container</em> (state + logic) and <em>Presentational</em> (display + events).
+        The container owns the data and decisions; the presentational component is simple, reusable, and testable.
+    </div>
+    <div class="alert alert-light border mb-0 py-2">
+        <strong>🎤 Live demo:</strong> Click on user cards to select them. Notice how the <strong>container</strong> (this page)
+        manages state, while <strong>UserCard</strong> only displays data and fires events — it has zero knowledge of selection logic.
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">User List <span class="badge bg-secondary">Container</span></h5>
+            <span class="badge bg-primary fs-6 px-3">
+                Selected: @(_selectedUser?.Name ?? "none")
+            </span>
+        </div>
+        <p class="text-muted small mb-3">
+            This page acts as the <strong>container</strong>: it owns the <code>_users</code> list and the <code>_selectedUser</code> state.
+            UserCard receives data via <code>[Parameter]</code> and notifies clicks via <code>EventCallback</code>.
+        </p>
+
+        @foreach (var user in _users)
+        {
+            <UserCard User="user"
+                     IsSelected="user == _selectedUser"
+                     OnSelected="HandleUserSelected" />
+        }
+    </div>
+
+    <div class="col-md-5">
+        <h5>Selected User Detail</h5>
+        @if (_selectedUser is not null)
+        {
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    @_selectedUser.Name
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-4">Email</dt>
+                        <dd class="col-8">@_selectedUser.Email</dd>
+                        <dt class="col-4">Role</dt>
+                        <dd class="col-8"><span class="badge bg-secondary">@_selectedUser.Role</span></dd>
+                        <dt class="col-4">Id</dt>
+                        <dd class="col-8 mb-0">@_selectedUser.Id</dd>
+                    </dl>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card bg-light border">
+                <div class="card-body text-center text-muted py-4">
+                    <div style="font-size: 2rem;">👆</div>
+                    Click a user card to see details here.
+                </div>
+            </div>
+        }
+
+        <div class="card border-dark mt-3">
+            <div class="card-header bg-dark text-white py-2">
+                <small>🏗️ Architecture</small>
+            </div>
+            <div class="card-body py-2 small font-monospace">
+                <div>📦 <strong>Page</strong> (Container)</div>
+                <div class="ms-3">├─ owns <code>_users</code> list</div>
+                <div class="ms-3">├─ owns <code>_selectedUser</code></div>
+                <div class="ms-3">├─ handles selection logic</div>
+                <div class="ms-3">└─ renders ↓</div>
+                <div class="ms-4 text-primary">🧩 <strong>UserCard</strong> (Presentational)</div>
+                <div class="ms-5">├─ receives <code>User</code>, <code>IsSelected</code></div>
+                <div class="ms-5">└─ fires <code>OnSelected</code></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4 p-3 bg-light border rounded">
+    <h6>🔑 Key Points</h6>
+    <ul class="mb-0">
+        <li><strong>UserCard</strong> (presentational): receives <code>User</code> and <code>IsSelected</code> via <code>[Parameter]</code>, notifies clicks via <code>EventCallback</code>.</li>
+        <li><strong>This page</strong> (container): owns <code>_users</code> and <code>_selectedUser</code>, handles all decisions.</li>
+        <li>UserCard can be reused anywhere — it has no idea who manages the state.</li>
+    </ul>
+</div>
+
+@code {
+    private Models.User? _selectedUser;
+
+    private readonly List<Models.User> _users =
+    [
+        new(1, "Alice Johnson",  "alice@example.com",  "Admin"),
+        new(2, "Bob Smith",      "bob@example.com",    "Developer"),
+        new(3, "Carol White",    "carol@example.com",  "Designer"),
+        new(4, "David Brown",    "david@example.com",  "Developer"),
+        new(5, "Eve Davis",      "eve@example.com",    "PM"),
+    ];
+
+    private void HandleUserSelected(Models.User user)
+    {
+        _selectedUser = _selectedUser == user ? null : user;
+    }
+}

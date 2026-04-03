@@ -1,0 +1,21 @@
+@* Granular: isolated static info section *@
+
+<div class="card border-success">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Static Info Section</h6>
+            <span class="badge bg-success">Renders: @_renderCount</span>
+        </div>
+        <p class="mb-0 mt-1">Timestamp: <code>@DateTime.Now.ToString("HH:mm:ss.fff")</code></p>
+    </div>
+</div>
+
+@code {
+    private int _renderCount;
+
+    protected override bool ShouldRender()
+    {
+        _renderCount++;
+        return true;
+    }
+}
