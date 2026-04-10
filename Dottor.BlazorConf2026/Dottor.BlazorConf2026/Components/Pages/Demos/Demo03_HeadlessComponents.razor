@@ -29,11 +29,11 @@
                     <Header>
                         @* Custom Bootstrap tab UI *@
                         <ul class="nav nav-tabs mb-3">
-                            @foreach (var tab in _tabsA.Tabs)
+                            @foreach (var tab in context.Tabs)
                             {
                                 <li class="nav-item">
-                                    <button class="nav-link @(_tabsA.IsActive(tab.Key) ? "active" : "")"
-                                            @onclick="() => _tabsA.SetActive(tab.Key)">
+                                    <button class="nav-link @(context.IsActive(tab.Key) ? "active" : "")"
+                                            @onclick="() => context.SetActive(tab.Key)">
                                         @tab.Title
                                     </button>
                                 </li>
@@ -67,10 +67,10 @@
                 <HeadlessTabs @ref="_tabsB" DefaultActiveKey="overview">
                     <Header>
                         <div class="d-flex gap-2 mb-3">
-                            @foreach (var tab in _tabsB.Tabs)
+                            @foreach (var tab in context.Tabs)
                             {
-                                <button class="btn @(_tabsB.IsActive(tab.Key) ? "btn-primary" : "btn-outline-primary") btn-sm rounded-pill"
-                                        @onclick="() => _tabsB.SetActive(tab.Key)">
+                                <button class="btn @(context.IsActive(tab.Key) ? "btn-primary" : "btn-outline-primary") btn-sm rounded-pill"
+                                        @onclick="() => context.SetActive(tab.Key)">
                                     @tab.Title
                                 </button>
                             }
